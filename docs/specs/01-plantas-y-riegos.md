@@ -3,7 +3,8 @@
 - **Historias:** HU-1.1 Registrar una planta · HU-1.2 Registrar un riego de hoy
 - **Tickets:** T-01 a T-07 (`docs/backlog/E1-plantas-y-riegos.md`)
 - **Fuentes:** `docs/prd/invernadero-mvp.md`, `docs/backlog/E1-plantas-y-riegos.md`
-- **Estado:** borrador. Hay que revisar las decisiones marcadas con [DECISIÓN] antes de implementar.
+- **Estado:** implementada y verificada (commit `83488ad`, sección 4.1). Pendiente: decidir cómo
+  tratar una fecha futura en un riego (nota 1 de la sección 4.1).
 
 ## 1. Modelos
 
@@ -206,6 +207,36 @@ reciente primero). Si la planta no tiene riegos, devuelve `[]`.
 
 Nota sobre CA-1.2.3: el criterio del backlog usa un riego "del 25/10". En este sprint no se pueden
 registrar fechas pasadas (HU-1.3), así que se verifica con dos riegos de hoy registrados en orden.
+
+### 4.1 Resultados de la verificación manual (28/10/2026)
+
+Hecha con curl contra `http://localhost:3000` y una base de datos de desarrollo, sobre el commit
+`83488ad`. Ids usados: planta A `6ae205c62752ea234546d1d2`, planta B `6ae205d92752ea234546d1dd`.
+
+| Criterio | Petición | Esperado | Obtenido | Resultado |
+|---|---|---|---|---|
+| CA-1.1.1 | `POST /api/plantas` (planta A, intervalo 3) y luego `GET /api/plantas` | 201; la planta aparece en el listado | 201; aparece en el listado | ✅ |
+| CA-1.1.2 | `POST /api/plantas` con `"createdAt":"2020-01-01T00:00:00Z"` en el cuerpo | `createdAt` = momento de creación | `createdAt: 2026-10-28T14:25:10.472Z` | ✅ |
+| CA-1.1.3 | `GET /api/plantas/A/riegos` antes de regar | 200 `[]` | 200 `[]` | ✅ |
+| CA-1.1.5 | `POST /api/plantas` con `intervaloRiegoDias: 0` | 400, "El intervalo mínimo es 1 día" | 400, `detalles.intervaloRiegoDias` con ese mensaje | ✅ |
+| CA-1.1.7 | `GET /api/plantas` antes y después del `POST` inválido | El listado no cambia | 1 planta antes, 1 después | ✅ |
+| CA-1.2.1 | `POST /api/riegos` con planta A, `cantidadMl: 500`, `cuidador: "Ana"` | 201; aparece en el historial | 201; aparece en el historial | ✅ |
+| CA-1.2.2 | `POST /api/riegos` con planta A, `cantidadMl: 300`, `"fecha":"2030-01-01T00:00:00Z"` | 201 con la fecha actual (se ignora la del cuerpo) | 201, `fecha: 2026-10-28T14:25:30.429Z` | ✅ (ver nota 1) |
+| CA-1.2.3 | `GET /api/plantas/A/riegos` tras los dos riegos | Dos riegos, el más reciente primero | 300 ml (14:25:30.429) y luego 500 ml (14:25:30.075) | ✅ |
+| CA-1.2.4 | `POST /api/riegos` con `planta: "64b7f0000000000000000000"` | 404, "La planta no existe" | 404, "La planta no existe" | ✅ |
+| CA-1.2.5 | `POST /api/riegos` con planta A, `cantidadMl: 0` | 400, "La cantidad de agua debe ser mayor que 0" | 400 con ese mensaje | ✅ |
+| CA-1.2.7 | `GET /api/plantas/B/riegos` después de regar A | 200 `[]` | 200 `[]` | ✅ |
+
+CA-1.1.4, CA-1.1.6 y CA-1.2.6 se verifican con tests de modelo (`npm test`: 24/24). El id mal formado
+(400 "Identificador de planta inválido") se comprobó con peticiones locales sin base de datos.
+
+**Notas**
+1. **Fecha futura.** El comportamiento cumple esta spec, pero contradice la regla del PRD "un riego
+   no puede tener fecha futura": una fecha futura no se rechaza, se registra en silencio como un riego
+   de hoy. Hay que decidir si la API debe responder 400 y, si es así, actualizar esta spec y el código.
+2. **Codificación.** Una planta enviada desde Git Bash en Windows con "á" sin escapar se guardó como
+   `"Mandr�gora"`, porque el cliente no envió UTF-8. La misma planta con `á` se guardó bien.
+   El servidor acepta UTF-8 inválido sin avisar; queda como posible mejora.
 
 ## 5. Ticket → archivos
 

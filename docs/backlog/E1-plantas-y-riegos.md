@@ -6,8 +6,8 @@ Rol único del MVP: **cuidador**.
 
 | Id | Historia | Estado |
 |---|---|---|
-| HU-1.1 | Registrar una planta | Lista para el sprint |
-| HU-1.2 | Registrar un riego de hoy | Lista para el sprint |
+| HU-1.1 | Registrar una planta | Terminada |
+| HU-1.2 | Registrar un riego de hoy | Terminada (punto abierto: fecha futura) |
 | HU-1.3 | Registrar un riego olvidado | Por refinar |
 | HU-1.4 | Consultar el listado de plantas | Por refinar (versión mínima adelantada en la Spec 01) |
 | HU-1.5 | Consultar el historial de riegos de una planta | Por refinar (versión mínima adelantada en la Spec 01) |
@@ -17,7 +17,7 @@ Rol único del MVP: **cuidador**.
 
 ## Dentro del MVP
 
-### HU-1.1 · Registrar una planta — Lista para el sprint
+### HU-1.1 · Registrar una planta — Terminada
 Como cuidador, quiero registrar una planta con su nombre, especie, ubicación e intervalo de riego
 en días, para que el invernadero sepa qué planta es, dónde está y cada cuánto hay que regarla.
 - **PRD:** alcance 1.
@@ -60,7 +60,7 @@ en días, para que el invernadero sepa qué planta es, dónde está y cada cuán
    CUANDO el cuidador consulta el listado,
    ENTONCES el listado no ha cambiado.
 
-### HU-1.2 · Registrar un riego de hoy — Lista para el sprint
+### HU-1.2 · Registrar un riego de hoy — Terminada (punto abierto: fecha futura)
 Como cuidador, quiero registrar que regué una planta hoy, con cuánta agua y, si quiero, quién lo hizo,
 para que su próximo riego se cuente desde este momento.
 - **PRD:** alcance 2.
@@ -172,11 +172,11 @@ para que deje de aparecer en el listado.
 - **Descripción:** configurar el proyecto Node con el stack de AGENTS.md y separar la app
   (`src/app.js`) del arranque (`src/index.js`), para poder probar la app sin levantar el servidor.
 - **Definition of Done:**
-  - [ ] Existe `package.json` con los scripts `dev` y `test` y las dependencias de AGENTS.md.
-  - [ ] Prettier está configurado y el código lo cumple.
-  - [ ] `src/app.js` exporta la app sin llamar a `listen`; `src/index.js` conecta y arranca.
-  - [ ] La conexión a la base de datos se toma de una variable de entorno; no hay credenciales en el código.
-  - [ ] `npm run dev` arranca y `npm test` se ejecuta sin errores (aunque aún no haya pruebas).
+  - [x] Existe `package.json` con los scripts `dev` y `test` y las dependencias de AGENTS.md.
+  - [x] Prettier está configurado y el código lo cumple.
+  - [x] `src/app.js` exporta la app sin llamar a `listen`; `src/index.js` conecta y arranca.
+  - [x] La conexión a la base de datos se toma de una variable de entorno; no hay credenciales en el código.
+  - [x] `npm run dev` arranca y `npm test` se ejecuta sin errores (aunque aún no haya pruebas).
 - **Dependencias:** ninguna.
 
 ### T-02 · Reglas y modelo de planta
@@ -184,10 +184,10 @@ para que deje de aparecer en el listado.
 - **Descripción:** crear el modelo de planta con sus reglas de validación (datos obligatorios,
   intervalo entero de al menos 1) y su fecha de registro automática, según la sección 1.1 de la spec.
 - **Definition of Done:**
-  - [ ] El modelo tiene los campos, reglas y mensajes de la sección 1.1 de la spec.
-  - [ ] Las validaciones se pueden comprobar sin base de datos (`validateSync()`).
-  - [ ] Hay un test de modelo para una planta válida y otro para cada dato obligatorio.
-  - [ ] `npm test` pasa.
+  - [x] El modelo tiene los campos, reglas y mensajes de la sección 1.1 de la spec.
+  - [x] Las validaciones se pueden comprobar sin base de datos (`validateSync()`).
+  - [x] Hay un test de modelo para una planta válida y otro para cada dato obligatorio.
+  - [x] `npm test` pasa.
 - **Dependencias:** T-01.
 
 ### T-03 · Registrar una planta desde la API
@@ -195,10 +195,10 @@ para que deje de aparecer en el listado.
 - **Descripción:** exponer `POST /api/plantas` y `GET /api/plantas` según las secciones 2.1 y 2.2
   de la spec, con el manejador común de errores 400/404.
 - **Definition of Done:**
-  - [ ] Una planta válida queda guardada con la fecha de hoy como fecha de registro.
-  - [ ] Una planta inválida no se guarda, y la respuesta 400 indica qué dato falla.
-  - [ ] La ruta solo copia del cuerpo los campos permitidos; `createdAt` se ignora.
-  - [ ] `npm test` pasa.
+  - [x] Una planta válida queda guardada con la fecha de hoy como fecha de registro.
+  - [x] Una planta inválida no se guarda, y la respuesta 400 indica qué dato falla.
+  - [x] La ruta solo copia del cuerpo los campos permitidos; `createdAt` se ignora.
+  - [x] `npm test` pasa.
 - **Dependencias:** T-02.
 
 ### T-04 · Pruebas de aceptación de HU-1.1
@@ -206,10 +206,10 @@ para que deje de aparecer en el listado.
 - **Descripción:** verificar CA-1.1.1 a CA-1.1.7 como indica la sección 4 de la spec: tests de
   modelo para las reglas de validación y curl manual para lo que necesita persistencia.
 - **Definition of Done:**
-  - [ ] CA-1.1.4, 1.1.5 y 1.1.6 tienen un test de modelo cuyo nombre incluye el id del criterio.
-  - [ ] CA-1.1.1, 1.1.2, 1.1.3 y 1.1.7 se verificaron con curl, y el resultado quedó anotado en la spec.
-  - [ ] Ningún test usa la base de datos ni el `.env`.
-  - [ ] `npm test` pasa.
+  - [x] CA-1.1.4, 1.1.5 y 1.1.6 tienen un test de modelo cuyo nombre incluye el id del criterio.
+  - [x] CA-1.1.1, 1.1.2, 1.1.3 y 1.1.7 se verificaron con curl, y el resultado quedó anotado en la spec.
+  - [x] Ningún test usa la base de datos ni el `.env`.
+  - [x] `npm test` pasa.
 - **Dependencias:** T-03.
 
 ### T-05 · Reglas y modelo de riego
@@ -217,10 +217,10 @@ para que deje de aparecer en el listado.
 - **Descripción:** crear el modelo de riego con sus reglas de validación (cantidad en ml obligatoria
   y mayor que 0, fecha actual por defecto) y su referencia a la planta, según la sección 1.2 de la spec.
 - **Definition of Done:**
-  - [ ] El modelo tiene los campos, reglas y mensajes de la sección 1.2 de la spec.
-  - [ ] Las validaciones se pueden comprobar sin base de datos (`validateSync()`).
-  - [ ] Hay un test de modelo para un riego válido y otro para la cantidad ausente.
-  - [ ] `npm test` pasa.
+  - [x] El modelo tiene los campos, reglas y mensajes de la sección 1.2 de la spec.
+  - [x] Las validaciones se pueden comprobar sin base de datos (`validateSync()`).
+  - [x] Hay un test de modelo para un riego válido y otro para la cantidad ausente.
+  - [x] `npm test` pasa.
 - **Dependencias:** T-02 (el riego referencia a la planta).
 
 ### T-06 · Registrar un riego desde la API
@@ -228,22 +228,24 @@ para que deje de aparecer en el listado.
 - **Descripción:** exponer `POST /api/riegos` y `GET /api/plantas/:id/riegos` según las
   secciones 2.3 y 2.4 de la spec.
 - **Definition of Done:**
-  - [ ] Un riego válido queda guardado con la fecha actual, asociado a su planta; `fecha` del cuerpo se ignora.
-  - [ ] Un riego a una planta inexistente responde 404; un id mal formado responde 400.
-  - [ ] Un riego con una cantidad inválida responde 400 y no se guarda.
-  - [ ] El historial devuelve los riegos de la planta, del más reciente al más antiguo.
-  - [ ] `npm test` pasa.
+  - [x] Un riego válido queda guardado con la fecha actual, asociado a su planta; `fecha` del cuerpo se ignora.
+  - [x] Un riego a una planta inexistente responde 404; un id mal formado responde 400.
+  - [x] Un riego con una cantidad inválida responde 400 y no se guarda.
+  - [x] El historial devuelve los riegos de la planta, del más reciente al más antiguo.
+  - [x] `npm test` pasa.
 - **Dependencias:** T-03 y T-05.
+- **Nota:** una `fecha` futura en el cuerpo se ignora, como dice la spec, pero el PRD dice que debe
+  rechazarse. Está pendiente de decisión (spec 01, sección 4.1, nota 1).
 
 ### T-07 · Pruebas de aceptación de HU-1.2
 - **Historia:** HU-1.2 · **Tipo:** Test
 - **Descripción:** verificar CA-1.2.1 a CA-1.2.7 como indica la sección 4 de la spec: tests de
   modelo para las reglas de validación y curl manual para lo que necesita persistencia.
 - **Definition of Done:**
-  - [ ] CA-1.2.2, 1.2.5 y 1.2.6 tienen un test de modelo cuyo nombre incluye el id del criterio.
-  - [ ] CA-1.2.1, 1.2.2, 1.2.3, 1.2.4 y 1.2.7 se verificaron con curl, y el resultado quedó anotado en la spec.
-  - [ ] Ningún test usa la base de datos ni el `.env`.
-  - [ ] `npm test` pasa.
+  - [x] CA-1.2.2, 1.2.5 y 1.2.6 tienen un test de modelo cuyo nombre incluye el id del criterio.
+  - [x] CA-1.2.1, 1.2.2, 1.2.3, 1.2.4 y 1.2.7 se verificaron con curl, y el resultado quedó anotado en la spec.
+  - [x] Ningún test usa la base de datos ni el `.env`.
+  - [x] `npm test` pasa.
 - **Dependencias:** T-06.
 
 ### Orden de ejecución sugerido
