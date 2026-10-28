@@ -1,6 +1,7 @@
 # E1 · Plantas y riegos — Historias de usuario
 
 Fuentes: `docs/prd/invernadero-mvp.md` y `docs/backlog/epicas.md`.
+Spec técnica del sprint: `docs/specs/01-plantas-y-riegos.md`.
 Rol único del MVP: **cuidador**.
 
 | Id | Historia | Estado |
@@ -8,8 +9,8 @@ Rol único del MVP: **cuidador**.
 | HU-1.1 | Registrar una planta | Lista para el sprint |
 | HU-1.2 | Registrar un riego de hoy | Lista para el sprint |
 | HU-1.3 | Registrar un riego olvidado | Por refinar |
-| HU-1.4 | Consultar el listado de plantas | Por refinar |
-| HU-1.5 | Consultar el historial de riegos de una planta | Por refinar |
+| HU-1.4 | Consultar el listado de plantas | Por refinar (versión mínima adelantada en la Spec 01) |
+| HU-1.5 | Consultar el historial de riegos de una planta | Por refinar (versión mínima adelantada en la Spec 01) |
 | HU-1.6 | Corregir o anular un riego | Fuera de alcance |
 | HU-1.7 | Cambiar el intervalo de riego de una planta | Fuera de alcance |
 | HU-1.8 | Retirar una planta | Fuera de alcance |
@@ -24,7 +25,9 @@ en días, para que el invernadero sepa qué planta es, dónde está y cada cuán
 **Reglas que aplican**
 - El intervalo de riego es un número entero de días, como mínimo 1. (PRD)
 - Nombre, especie, ubicación e intervalo son obligatorios. (Decisión del cliente)
+- Los cuidados especiales y la marca de reposo son opcionales. (PRD)
 - [SUPUESTO] El sistema asigna la fecha de registro en el momento de crear la planta. (PRD)
+- [SUPUESTO] Un dato que solo contiene espacios cuenta como vacío. (PRD)
 
 **Criterios de aceptación**
 1. **Registro válido.**
@@ -58,7 +61,7 @@ en días, para que el invernadero sepa qué planta es, dónde está y cada cuán
    ENTONCES el listado no ha cambiado.
 
 ### HU-1.2 · Registrar un riego de hoy — Lista para el sprint
-Como cuidador, quiero registrar que regué una planta hoy y con cuánta agua,
+Como cuidador, quiero registrar que regué una planta hoy, con cuánta agua y, si quiero, quién lo hizo,
 para que su próximo riego se cuente desde este momento.
 - **PRD:** alcance 2.
 
@@ -67,12 +70,13 @@ para que su próximo riego se cuente desde este momento.
 - Si una planta tiene varios riegos, cuenta el más reciente. (PRD; en esta historia solo se observa en el historial)
 - No se puede registrar un riego de una planta que no existe. (Decisión del cliente)
 - La cantidad de agua de un riego debe ser mayor que 0. (Decisión del cliente)
+- [SUPUESTO] La cantidad de agua se expresa en mililitros. (PRD)
 
 **Criterios de aceptación**
 1. **Riego válido.**
    DADO que "Mandrágora" está registrada y hoy es 28/10/2026,
-   CUANDO el cuidador registra que la regó hoy con 0,5 litros,
-   ENTONCES el historial de "Mandrágora" muestra un riego del 28/10/2026 con 0,5 litros.
+   CUANDO el cuidador registra que la regó hoy con 500 ml,
+   ENTONCES el historial de "Mandrágora" muestra un riego del 28/10/2026 con 500 ml.
 2. **Fecha automática.**
    DADO un cuidador que registra un riego de hoy,
    CUANDO lo guarda,
@@ -87,7 +91,7 @@ para que su próximo riego se cuente desde este momento.
    ENTONCES el riego no se registra y se le indica que la planta no existe.
 5. **Cantidad de agua no positiva.**
    DADO que "Mandrágora" está registrada,
-   CUANDO el cuidador registra un riego con 0 litros o una cantidad negativa,
+   CUANDO el cuidador registra un riego con 0 ml o una cantidad negativa,
    ENTONCES el riego no se registra, se le indica que la cantidad debe ser mayor que 0
    y el historial no cambia.
 6. **Cantidad de agua obligatoria.**
@@ -101,10 +105,11 @@ para que su próximo riego se cuente desde este momento.
 
 ### Casos borde pendientes (HU-1.1 y HU-1.2)
 - ¿Se permiten dos plantas con el mismo nombre?
-- ¿Un texto con solo espacios cuenta como dato faltante? ¿Hay un límite de longitud?
+- ¿Hay un límite de longitud para los textos? (Los textos con solo espacios ya cuentan como vacíos.)
 - ¿Hay un intervalo máximo razonable?
-- ¿En qué unidad se expresa la cantidad de agua? Los ejemplos usan litros como [SUPUESTO].
+- ¿La cantidad de agua debe ser un número entero de mililitros?
 - ¿Hay una cantidad máxima de agua por riego?
+- ¿Es obligatorio indicar quién hizo el riego? En la Spec 01 es opcional.
 - Dos riegos de la misma planta el mismo día: ¿se aceptan ambos?
 - Riego cerca de la medianoche: ¿qué "hoy" cuenta? (zona horaria)
 
@@ -154,8 +159,13 @@ para que deje de aparecer en el listado.
 
 ## Tickets del sprint (HU-1.1 y HU-1.2)
 
-> **Prerrequisito (AGENTS.md):** ninguna funcionalidad se implementa sin spec. Antes de empezar
-> T-02, la spec de HU-1.1 debe existir en `docs/specs/`. Antes de empezar T-05, debe existir la de HU-1.2.
+> **Prerrequisito (AGENTS.md):** ninguna funcionalidad se implementa sin spec. Las dos historias
+> están cubiertas por `docs/specs/01-plantas-y-riegos.md`. La sección 5 de esa spec indica qué
+> archivos crea o modifica cada ticket.
+>
+> **Estrategia de pruebas:** las reglas de validación viven en los modelos y se prueban con tests
+> automáticos sin base de datos (`validateSync()`). Lo que necesita persistencia se verifica a mano
+> con curl contra una base de datos de desarrollo. Ver la sección 4 de la spec.
 
 ### T-01 · Preparar el proyecto
 - **Historia:** HU-1.1 (habilita también HU-1.2) · **Tipo:** Configuración
@@ -171,77 +181,73 @@ para que deje de aparecer en el listado.
 
 ### T-02 · Reglas y modelo de planta
 - **Historia:** HU-1.1 · **Tipo:** Modelo/Dominio
-- **Descripción:** escribir en `src/dominio/` las reglas puras de una planta válida (datos
-  obligatorios, intervalo entero de al menos 1) y el modelo que la guarda con su fecha de registro.
+- **Descripción:** crear el modelo de planta con sus reglas de validación (datos obligatorios,
+  intervalo entero de al menos 1) y su fecha de registro automática, según la sección 1.1 de la spec.
 - **Definition of Done:**
-  - [ ] La spec de HU-1.1 está en `docs/specs/`.
-  - [ ] Las reglas de validación son funciones puras, sin dependencias de la base de datos ni de Express.
-  - [ ] Hay pruebas unitarias de cada regla: dato faltante, intervalo 0, negativo, decimal y válido.
-  - [ ] El modelo guarda nombre, especie, ubicación, intervalo y fecha de registro.
+  - [ ] El modelo tiene los campos, reglas y mensajes de la sección 1.1 de la spec.
+  - [ ] Las validaciones se pueden comprobar sin base de datos (`validateSync()`).
+  - [ ] Hay un test de modelo para una planta válida y otro para cada dato obligatorio.
   - [ ] `npm test` pasa.
 - **Dependencias:** T-01.
 
 ### T-03 · Registrar una planta desde la API
 - **Historia:** HU-1.1 · **Tipo:** Endpoint/API
-- **Descripción:** exponer bajo `/api` la operación de registrar una planta: usa las reglas de
-  T-02, asigna la fecha de registro y devuelve un error claro si algo falla.
+- **Descripción:** exponer `POST /api/plantas` y `GET /api/plantas` según las secciones 2.1 y 2.2
+  de la spec, con el manejador común de errores 400/404.
 - **Definition of Done:**
   - [ ] Una planta válida queda guardada con la fecha de hoy como fecha de registro.
-  - [ ] Una planta inválida no se guarda, y la respuesta indica qué dato falla.
-  - [ ] La ruta sigue las convenciones de AGENTS.md (español, REST, bajo `/api`).
+  - [ ] Una planta inválida no se guarda, y la respuesta 400 indica qué dato falla.
+  - [ ] La ruta solo copia del cuerpo los campos permitidos; `createdAt` se ignora.
   - [ ] `npm test` pasa.
 - **Dependencias:** T-02.
 
 ### T-04 · Pruebas de aceptación de HU-1.1
 - **Historia:** HU-1.1 · **Tipo:** Test
-- **Descripción:** convertir los criterios 1 a 7 de HU-1.1 en pruebas de integración contra la API,
-  usando una base de datos de prueba aislada.
+- **Descripción:** verificar CA-1.1.1 a CA-1.1.7 como indica la sección 4 de la spec: tests de
+  modelo para las reglas de validación y curl manual para lo que necesita persistencia.
 - **Definition of Done:**
-  - [ ] Hay una prueba por criterio de aceptación, con un nombre que lo identifique.
-  - [ ] Las pruebas nunca usan la base de datos real ni el `.env`.
-  - [ ] Los criterios 1 y 3 (listado e historial) se comprueban sobre lo guardado, porque HU-1.4 y
-        HU-1.5 no están en este sprint.
+  - [ ] CA-1.1.4, 1.1.5 y 1.1.6 tienen un test de modelo cuyo nombre incluye el id del criterio.
+  - [ ] CA-1.1.1, 1.1.2, 1.1.3 y 1.1.7 se verificaron con curl, y el resultado quedó anotado en la spec.
+  - [ ] Ningún test usa la base de datos ni el `.env`.
   - [ ] `npm test` pasa.
 - **Dependencias:** T-03.
 
 ### T-05 · Reglas y modelo de riego
 - **Historia:** HU-1.2 · **Tipo:** Modelo/Dominio
-- **Descripción:** escribir en `src/dominio/` las reglas puras de un riego válido (cantidad de
-  agua obligatoria y mayor que 0, fecha de hoy) y el modelo que lo guarda asociado a su planta.
+- **Descripción:** crear el modelo de riego con sus reglas de validación (cantidad en ml obligatoria
+  y mayor que 0, fecha actual por defecto) y su referencia a la planta, según la sección 1.2 de la spec.
 - **Definition of Done:**
-  - [ ] La spec de HU-1.2 está en `docs/specs/`.
-  - [ ] Las reglas de validación son funciones puras, sin dependencias de la base de datos ni de Express.
-  - [ ] Hay pruebas unitarias de cada regla: cantidad ausente, 0, negativa y válida (con decimales).
-  - [ ] El modelo guarda la planta, la fecha y la cantidad de agua.
+  - [ ] El modelo tiene los campos, reglas y mensajes de la sección 1.2 de la spec.
+  - [ ] Las validaciones se pueden comprobar sin base de datos (`validateSync()`).
+  - [ ] Hay un test de modelo para un riego válido y otro para la cantidad ausente.
   - [ ] `npm test` pasa.
 - **Dependencias:** T-02 (el riego referencia a la planta).
 
 ### T-06 · Registrar un riego desde la API
 - **Historia:** HU-1.2 · **Tipo:** Endpoint/API
-- **Descripción:** exponer bajo `/api` la operación de registrar un riego de hoy para una planta:
-  usa las reglas de T-05 y rechaza el riego si la planta no existe.
+- **Descripción:** exponer `POST /api/riegos` y `GET /api/plantas/:id/riegos` según las
+  secciones 2.3 y 2.4 de la spec.
 - **Definition of Done:**
-  - [ ] Un riego válido queda guardado con la fecha de hoy, asociado a su planta.
-  - [ ] Un riego a una planta inexistente no se guarda, y la respuesta lo indica.
-  - [ ] Un riego con una cantidad inválida no se guarda, y la respuesta lo indica.
-  - [ ] Registrar un riego no modifica los riegos anteriores ni los de otras plantas.
+  - [ ] Un riego válido queda guardado con la fecha actual, asociado a su planta; `fecha` del cuerpo se ignora.
+  - [ ] Un riego a una planta inexistente responde 404; un id mal formado responde 400.
+  - [ ] Un riego con una cantidad inválida responde 400 y no se guarda.
+  - [ ] El historial devuelve los riegos de la planta, del más reciente al más antiguo.
   - [ ] `npm test` pasa.
 - **Dependencias:** T-03 y T-05.
 
 ### T-07 · Pruebas de aceptación de HU-1.2
 - **Historia:** HU-1.2 · **Tipo:** Test
-- **Descripción:** convertir los criterios 1 a 7 de HU-1.2 en pruebas de integración contra la API,
-  usando una base de datos de prueba aislada.
+- **Descripción:** verificar CA-1.2.1 a CA-1.2.7 como indica la sección 4 de la spec: tests de
+  modelo para las reglas de validación y curl manual para lo que necesita persistencia.
 - **Definition of Done:**
-  - [ ] Hay una prueba por criterio de aceptación, con un nombre que lo identifique.
-  - [ ] Las pruebas nunca usan la base de datos real ni el `.env`.
-  - [ ] Los criterios de historial (1, 3 y 7) se comprueban sobre lo guardado, porque HU-1.5 no está
-        en este sprint.
+  - [ ] CA-1.2.2, 1.2.5 y 1.2.6 tienen un test de modelo cuyo nombre incluye el id del criterio.
+  - [ ] CA-1.2.1, 1.2.2, 1.2.3, 1.2.4 y 1.2.7 se verificaron con curl, y el resultado quedó anotado en la spec.
+  - [ ] Ningún test usa la base de datos ni el `.env`.
   - [ ] `npm test` pasa.
 - **Dependencias:** T-06.
 
 ### Orden de ejecución sugerido
-1. Specs de HU-1.1 y HU-1.2 en `docs/specs/` (prerrequisito).
+1. Spec 01 de HU-1.1 y HU-1.2 (`docs/specs/01-plantas-y-riegos.md`), ya escrita y pendiente de revisión.
 2. **T-01** Preparar el proyecto.
 3. **T-02** Reglas y modelo de planta.
 4. **T-03** Registrar una planta desde la API, y **T-05** Reglas y modelo de riego (en paralelo).

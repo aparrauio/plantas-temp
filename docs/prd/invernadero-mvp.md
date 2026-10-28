@@ -13,9 +13,10 @@ Dependen de la memoria o de notas sueltas, así que algunas plantas se secan y o
   resultado coincide al 100 % con el cálculo manual de las reglas de negocio.
 
 ## 4. Alcance del MVP
-1. Registrar una planta con su nombre, especie, ubicación e intervalo de riego en días.
-2. Registrar un riego de una planta con la cantidad de agua, incluida una fecha pasada para
-   riegos olvidados.
+1. Registrar una planta con su nombre, especie, ubicación e intervalo de riego en días y,
+   si los tiene, sus cuidados especiales.
+2. Registrar un riego de una planta con la cantidad de agua y, si se quiere, quién lo hizo,
+   incluida una fecha pasada para riegos olvidados.
 3. Consultar el listado de plantas y el historial de riegos de cada una.
 4. Consultar qué plantas necesitan agua a la fecha de hoy.
 
@@ -44,7 +45,9 @@ Dependen de la memoria o de notas sueltas, así que algunas plantas se secan y o
   y aparece en la consulta igual que una vencida.
 - [SUPUESTO] El sistema asigna la fecha de registro de la planta en el momento de crearla.
 - [SUPUESTO] No se aceptan riegos con fecha anterior a la fecha de registro de la planta.
-- [SUPUESTO] La cantidad de agua se expresa en litros y admite decimales.
+- [SUPUESTO] La cantidad de agua se expresa en mililitros.
+- [SUPUESTO] Un dato que solo contiene espacios cuenta como vacío.
+- [SUPUESTO] Una planta puede marcarse como en reposo, pero en el MVP eso no cambia nada.
 
 ## 8. Puntos abiertos
 - ¿Se puede anular o corregir un riego registrado por error?
@@ -54,3 +57,5 @@ Dependen de la memoria o de notas sueltas, así que algunas plantas se secan y o
 - ¿Se permiten dos plantas con el mismo nombre?
 - ¿Hay un máximo para el intervalo de riego o para la cantidad de agua de un riego?
 - ¿Se aceptan dos riegos de la misma planta el mismo día?
+- ¿La cantidad de agua debe ser un número entero de mililitros?
+- ¿Es obligatorio indicar quién hizo el riego?

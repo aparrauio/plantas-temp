@@ -7,9 +7,10 @@ Fuente: `docs/prd/invernadero-mvp.md`.
 **Objetivo:** que el cuidador pueda registrar sus plantas y sus riegos, y consultarlos.
 
 **Alcance del PRD que cubre:**
-- 1. Registrar una planta con su nombre, especie, ubicación e intervalo de riego en días.
-- 2. Registrar un riego de una planta con la cantidad de agua, incluida una fecha pasada para
-  riegos olvidados.
+- 1. Registrar una planta con su nombre, especie, ubicación e intervalo de riego en días y,
+  si los tiene, sus cuidados especiales.
+- 2. Registrar un riego de una planta con la cantidad de agua y, si se quiere, quién lo hizo,
+  incluida una fecha pasada para riegos olvidados.
 - 3. Consultar el listado de plantas y el historial de riegos de cada una.
 
 **Reglas de negocio que aplican:**
@@ -20,7 +21,8 @@ Fuente: `docs/prd/invernadero-mvp.md`.
 - Un riego no puede tener fecha futura; sí puede tener fecha pasada.
 - [SUPUESTO] El sistema asigna la fecha de registro de la planta en el momento de crearla.
 - [SUPUESTO] No se aceptan riegos con fecha anterior a la fecha de registro de la planta.
-- [SUPUESTO] La cantidad de agua se expresa en litros y admite decimales.
+- [SUPUESTO] La cantidad de agua se expresa en mililitros.
+- [SUPUESTO] Un dato que solo contiene espacios cuenta como vacío.
 
 ## E2 · Cuidado
 
